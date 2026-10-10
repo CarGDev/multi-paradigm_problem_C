@@ -17,6 +17,8 @@ typedef struct {
   size_t count;
 } Values_Data;
 
+Values_Data *getting_all_data(Header *headers, int option, char **argv);
 Values_Data *order(Header *headers, int option, char **argv);
+void creatingResults(Header *headers, int option, char **argv);
 
 #endif

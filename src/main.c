@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "statistics: no data\n");
   }
   int option = menu(headers);
-  order(headers, option, argv);
+  creatingResults(headers, option, argv);
 
   return 0;
 }

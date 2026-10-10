@@ -2,7 +2,7 @@
 all: statistics
 
 CC = cc
-CFLAGS = -Wall -Wextra -g -Iinclude -Isrc
+CFLAGS = -Wall -Wextra -g -Iinclude -Isrc -MMD -MP
 BUILD = build
 SRC = $(shell find src -name '*.c')
 OBJ = $(patsubst src/%.c,${BUILD}/%.o,$(SRC))
@@ -19,3 +19,5 @@ $(BUILD):
 
 clean:
 	rm -rf $(BUILD) statistics
+
+-include $(OBJ:.o=.d)

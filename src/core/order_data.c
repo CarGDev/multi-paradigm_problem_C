@@ -1,4 +1,5 @@
 #include "order_data.h"
+#include "../statistic/main.h"
 #include "../utils/delimiter.h"
 #include "../utils/validate_data.h"
 #include "data.h"
@@ -16,7 +17,7 @@
 
 #define CHAR_SIZE 4096
 
-Values_Data *order(Header *headers, int option, char **argv) {
+Values_Data *getting_all_data(Header *headers, int option, char **argv) {
   printf("User has choosen: %s\n", headers[option].name);
 
   FILE *fp = fopen(argv[1], "r");
@@ -99,10 +100,110 @@ Values_Data *order(Header *headers, int option, char **argv) {
     }
   }
   fclose(fp);
-  if (type == TYPE_INT) {
-    printf("User has choosen: %ld\n", values->values.i[option]);
-  } else {
-    printf("User has choosen: %f\n", values->values.d[option]);
-  }
   return values;
+}
+
+void heaping_long(long *arr, int n, int i) {
+  int largest = i;
+  int l = 2 * i + 1;
+  int r = 2 * i + 2;
+
+  if (l < n && arr[l] > arr[largest])
+    largest = l;
+
+  if (r < n && arr[r] > arr[largest])
+    largest = r;
+
+  if (largest != i) {
+    long temp = arr[i];
+    arr[i] = arr[largest];
+    arr[largest] = temp;
+
+    heaping_long(arr, n, largest);
+  }
+}
+
+void heaping_double(double *arr, int n, int i) {
+  int largest = i;
+  int l = 2 * i + 1;
+  int r = 2 * i + 2;
+
+  if (l < n && arr[l] > arr[largest])
+    largest = l;
+
+  if (r < n && arr[r] > arr[largest])
+    largest = r;
+
+  if (largest != i) {
+    double temp = arr[i];
+    arr[i] = arr[largest];
+    arr[largest] = temp;
+
+    heaping_double(arr, n, largest);
+  }
+}
+
+void sorting(Values_Data *list, ColumnType type) {
+  int n = (int)list->count;
+  if (type == TYPE_INT) {
+    long *values = list->values.i;
+    for (int i = n / 2 - 1; i >= 0; i--)
+      heaping_long(values, n, i);
+
+    for (int i = n - 1; i > 0; i--) {
+      long temp = values[0];
+      values[0] = values[i];
+      values[i] = temp;
+
+      heaping_long(values, i, 0);
+    }
+  } else {
+    double *values = list->values.d;
+    for (int i = n / 2 - 1; i >= 0; i--)
+      heaping_double(values, n, i);
+
+    for (int i = n - 1; i > 0; i--) {
+      double temp = values[0];
+      values[0] = values[i];
+      values[i] = temp;
+
+      heaping_double(values, i, 0);
+    }
+  }
+}
+
+Values_Data *order(Header *headers, int option, char **argv) {
+  Values_Data *list = getting_all_data(headers, option, argv);
+  if (list == NULL) {
+    exit(1);
+  }
+  ColumnType type = headers[option].type;
+  sorting(list, type);
+  return list;
+}
+
+void creatingResults(Header *headers, int option, char **argv) {
+  Values_Data *list = order(headers, option, argv);
+  if (list == NULL) {
+    exit(1);
+  }
+  ColumnType type = headers[option].type;
+  median(list, &type);
+  mean(list, &type);
+  mode(list, &type);
+  if (type == TYPE_INT) {
+    long min = list->values.i[0];
+    long max = list->values.i[list->count - 1];
+    double range = max - min;
+    printf("Min: %ld\n", min);
+    printf("Max: %ld\n", max);
+    printf("Range: %f\n", range);
+  } else {
+    double min = list->values.d[0];
+    double max = list->values.d[list->count - 1];
+    double range = max - min;
+    printf("Min: %f\n", min);
+    printf("Max: %f\n", max);
+    printf("Range: %f\n", range);
+  }
 }
