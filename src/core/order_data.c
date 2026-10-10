@@ -95,6 +95,10 @@ Values_Data *getting_all_data(Header *headers, int option, char **argv) {
         }
       }
     }
+    for (size_t i = 0; tokens[i]; i++) {
+      free(tokens[i]);
+    }
+    free(tokens);
   }
   fclose(fp);
   return values;
@@ -185,6 +189,12 @@ void creatingResults(Header *headers, int option, char **argv) {
     exit(1);
   }
   ColumnType type = headers[option].type;
+  if (list->count == 0) {
+    fprintf(stderr, "statistics: the column has no valid values\n");
+    free(list->values.i);
+    free(list);
+    return;
+  }
   median(list, &type);
   mean(list, &type);
   mode(list, &type);
@@ -205,4 +215,7 @@ void creatingResults(Header *headers, int option, char **argv) {
     printf("Max: %f\n", max);
     printf("Range: %f\n", range);
   }
+  // values.i and values.d share the same union storage, free it once
+  free(list->values.i);
+  free(list);
 }

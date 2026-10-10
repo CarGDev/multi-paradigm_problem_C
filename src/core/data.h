@@ -12,5 +12,6 @@ typedef struct {
 } Header;
 
 Header *csv_headers(int argc, char **argv);
+void free_headers(Header *headers);
 
 #endif

@@ -34,54 +34,58 @@ void mean(Values_Data *list, ColumnType *type) {
   }
 }
 
+static double at(Values_Data *list, ColumnType type, size_t i) {
+  return type == TYPE_INT ? (double)list->values.i[i] : list->values.d[i];
+}
+
+static void print_value(double v, ColumnType type) {
+  if (type == TYPE_INT) {
+    printf(" %ld", (long)v);
+  } else {
+    printf(" %f", v);
+  }
+}
+
 /*
- * The mode is the most frequent value
+ * The mode is the most frequent value (or values, when several tie).
+ * The list is sorted, so equal values are contiguous: a run is a value.
  */
 void mode(Values_Data *list, ColumnType *type) {
-  // current count
-  int cc = 1;
-  // max count
-  int mc = 1;
-  // mode
-  if (*type == TYPE_INT) {
-    long m = list->values.i[0];
-    for (size_t i = 1; i < list->count; i++) {
-      // current value
-      long cv = list->values.i[i];
-      if (list->values.i[i - 1] == cv) {
-        cc++;
-      } else {
-        cc = 1;
-      }
-      if (cc > mc) {
-        mc = cc;
-        m = cv;
-      }
-    }
-    if (mc == 1) {
-      printf("Mode: there is no mode\n");
-    }
-    printf("Mode: %ld\n", m);
-  } else {
-    double m = list->values.d[0];
-    for (size_t i = 1; i < list->count; i++) {
-      // current value
-      double cv = list->values.d[i];
-      if (list->values.d[i - 1] == cv) {
-        cc++;
-      } else {
-        cc = 1;
-      }
-      if (cc > mc) {
-        mc = cc;
-        m = cv;
-      }
-    }
-    if (mc == 1) {
-      printf("Mode: there is no mode\n");
-    }
-    printf("Mode: %f\n", m);
+  size_t n = list->count;
+  if (n == 0) {
+    return;
   }
+
+  // longest run of equal values
+  size_t max_run = 1;
+  for (size_t i = 0; i < n;) {
+    size_t j = i;
+    while (j < n && at(list, *type, j) == at(list, *type, i)) {
+      j++;
+    }
+    if (j - i > max_run) {
+      max_run = j - i;
+    }
+    i = j;
+  }
+
+  if (max_run == 1) {
+    printf("Mode: there is no mode\n");
+    return;
+  }
+
+  printf("Mode:");
+  for (size_t i = 0; i < n;) {
+    size_t j = i;
+    while (j < n && at(list, *type, j) == at(list, *type, i)) {
+      j++;
+    }
+    if (j - i == max_run) {
+      print_value(at(list, *type, i), *type);
+    }
+    i = j;
+  }
+  printf("\n");
 }
 
 /*
@@ -107,8 +111,8 @@ void median(Values_Data *list, ColumnType *type) {
   } else {
     long isOdd = total_values % 2;
     if (isOdd != 0) {
-      long median = list->values.d[total_values / 2];
-      printf("Median: %ld\n", median);
+      double median = list->values.d[total_values / 2];
+      printf("Median: %f\n", median);
     } else {
       double avg = (list->values.d[total_values / 2 - 1] +
                     list->values.d[total_values / 2]) /

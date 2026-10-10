@@ -12,9 +12,18 @@ int main(int argc, char **argv) {
   Header *headers = csv_headers(argc, argv);
   if (!headers) {
     fprintf(stderr, "statistics: no data\n");
+    return 1;
   }
+
   int option = menu(headers);
+  if (option < 0) {
+    fprintf(stderr, "statistics: no numeric column selected\n");
+    free_headers(headers);
+    return 1;
+  }
+
   creatingResults(headers, option, argv);
+  free_headers(headers);
 
   return 0;
 }

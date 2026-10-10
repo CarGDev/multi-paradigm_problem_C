@@ -26,8 +26,14 @@ Header *csv_headers(int argc, char **argv) {
   size_t line_capacity = 0;
   size_t headers_capacity = 0;
 
-  getline(&prev_headers, &headers_capacity, fp);
-  getline(&line, &line_capacity, fp);
+  if (getline(&prev_headers, &headers_capacity, fp) == -1 ||
+      getline(&line, &line_capacity, fp) == -1) {
+    // empty file, or a header row without any data row
+    free(prev_headers);
+    free(line);
+    fclose(fp);
+    return NULL;
+  }
 
   char **tokens = str_split(prev_headers, ',');
   if (!tokens) {
@@ -55,8 +61,14 @@ Header *csv_headers(int argc, char **argv) {
 
   size_t j = 0;
 
+  size_t line_count = 0;
+  while (tokens_lines[line_count] != NULL) {
+    line_count++;
+  }
+
   for (size_t i = 0; tokens[i] != NULL; i++) {
-    ColumnType valid_input = validate_data(tokens_lines[i]);
+    ColumnType valid_input =
+        i < line_count ? validate_data(tokens_lines[i]) : TYPE_INVALID;
 
     if (valid_input != TYPE_INVALID) {
       headers[j].name = strdup(tokens[i]);
@@ -72,9 +84,23 @@ Header *csv_headers(int argc, char **argv) {
   headers[j].index = 0;
 
   free(tokens);
+  for (size_t i = 0; i < line_count; i++) {
+    free(tokens_lines[i]);
+  }
+  free(tokens_lines);
   free(line);
   free(prev_headers);
 
   fclose(fp);
   return headers;
+}
+
+void free_headers(Header *headers) {
+  if (headers == NULL) {
+    return;
+  }
+  for (size_t i = 0; headers[i].name != NULL; i++) {
+    free(headers[i].name);
+  }
+  free(headers);
 }
