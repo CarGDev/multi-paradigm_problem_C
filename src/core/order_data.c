@@ -3,8 +3,6 @@
 #include "../utils/delimiter.h"
 #include "../utils/validate_data.h"
 #include "data.h"
-#include <_stdio.h>
-#include <_string.h>
 #include <assert.h>
 #include <ctype.h>
 #include <stdbool.h>
@@ -12,7 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/_types/_ssize_t.h>
 #include <unistd.h>
 
 #define CHAR_SIZE 4096
@@ -191,6 +188,8 @@ void creatingResults(Header *headers, int option, char **argv) {
   median(list, &type);
   mean(list, &type);
   mode(list, &type);
+  quartiles(list, &type);
+  variance(list, &type);
   if (type == TYPE_INT) {
     long min = list->values.i[0];
     long max = list->values.i[list->count - 1];

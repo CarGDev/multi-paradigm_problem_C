@@ -1,14 +1,12 @@
 #include "data.h"
 #include "../utils/delimiter.h"
 #include "../utils/validate_data.h"
-#include <_stdio.h>
 #include <assert.h>
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/_types/_ssize_t.h>
 #include <unistd.h>
 
 Header *csv_headers(int argc, char **argv) {

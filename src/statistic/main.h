@@ -6,9 +6,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-double summatory(Values_Data *list);
+double summatory(Values_Data *list, ColumnType *type);
 void mean(Values_Data *list, ColumnType *type);
 void mode(Values_Data *list, ColumnType *type);
 void median(Values_Data *list, ColumnType *type);
+double percentile(Values_Data *list, ColumnType *type, double p);
+void quartiles(Values_Data *list, ColumnType *type);
+void variance(Values_Data *list, ColumnType *type);
 
 #endif
