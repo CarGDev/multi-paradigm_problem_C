@@ -1,79 +1,61 @@
 # multi-paradigm_problem_C
-program that calculates basic statistics (mean, median, and mode) on a list of integers. 
 
-## Project overview
+Command-line program written in C (procedural style) that reads a CSV file, lets you pick one numeric column, and prints descriptive statistics for it. It is the C part of a multi-paradigm assignment (C, OCaml, Python) that computes mean, median and mode.
 
-A program that calculates the **mean**, **median** and **mode** of a list of integers. The same problem is implemented in three languages, each with a different paradigm:
-
-| Language | Paradigm | Repository |
-|----------|----------|------------|
-| C | Procedural | `multi-paradigm_problem_C` |
-| OCaml | Functional | `multi-paradigm_problem_OCaml` |
-| Python | Object-oriented (`StatisticsCalculator` class) | `multi-paradigm_problem_Python` |
-
-> **Status:** the source code has not been written yet. This README is the design reference for what must be implemented. Everything below is *planned*; nothing is claimed as implemented.
-
-## Calculations
-
-| Statistic | Definition | Edge cases |
-|-----------|------------|------------|
-| Mean | The sum of all values divided by the number of values. | **Empty list:** undefined (division by zero); report an error instead of a number. |
-| Median | The middle value of the sorted list. | **Empty list:** undefined; report an error. **Even length:** no single middle value, so use the average of the two middle values (e.g. `[1, 2, 3, 4]` gives `2.5`). |
-| Mode | The value that occurs most often. | **Empty list:** undefined; report an error. **Multiple modes:** several values share the highest count (e.g. `[1, 1, 2, 2, 3]`); return all of them. **All values unique:** every value occurs once, so there is no meaningful mode; report "no mode". |
-
-## Planned additions (checklist)
-
-Optional statistics, built on the same functions where possible:
-
-- [ ] Minimum, maximum and range (max - min)
-- [ ] Sum and count
-- [ ] Variance and standard deviation (reuse the mean function)
-- [ ] Quartiles or percentiles (extend the median idea)
-
-Robustness cases to handle and test:
-
-- [ ] Empty list
-- [ ] Even-length list (median)
-- [ ] Multiple modes, and the case where every value occurs once
-- [ ] Negative numbers and duplicates
-- [ ] Invalid input, such as non-integers typed by the user
-
-## How to build and run
-
-> The commands below are the standard ones for each toolchain. They have **not been verified** because the code does not exist yet; re-check them once it does.
-
-### C (procedural)
-
-Source files: `src/main.c`, `src/main.h`.
+## Build
 
 ```sh
-gcc -Wall -Wextra -o main src/main.c
-./main
+make
 ```
 
-(`*.out`, `*.o` and other build artifacts are already ignored by `.gitignore`.)
+This compiles everything under `src/` into the `statistics` executable. `make clean` removes it and the `build/` folder.
 
-Example (expected output once implemented):
+## Run
+
+```sh
+./statistics results.csv
+```
+
+The CSV must be comma-separated with a header row. The program lists the numeric columns of the file:
 
 ```text
-Input:  1 2 2 3 4
-Mean:   2.4
-Median: 2
-Mode:   2
+Select one option to return data:
 
-Input:  1 2 3 4
-Mean:   2.5
-Median: 2.5
-Mode:   no mode (all values unique)
+1: task_id
+2: worker_id
+...
+15: fare
+16: duration_ms
 
-Input:  (empty)
-Error:  the list is empty
+Choose an option:
 ```
 
-## References (APA 7)
+Type the number of a column and press Enter.
 
-- Bruce, P., & Bruce, A. (2017). *Practical statistics for data scientists: 50 essential concepts*. O'Reilly Media. — **Statistics:** variance, standard deviation, percentiles.
-- Conchon, S., & Filliâtre, J.-C. (2026). *Learn programming with OCaml: Algorithms and data structures* (U. Nair, Trans.). OCaml Software Foundation. https://creativecommons.org/licenses/by-sa/4.0/ — **OCaml:** functional implementation. *(Publisher inferred from the funding note on the title page; confirm.)*
-- Illowsky, B., & Dean, S. (2018). *Introductory statistics*. OpenStax, Rice University. https://openstax.org/details/books/introductory-statistics — **Statistics:** definitions of mean, median and mode.
-- Kernighan, B. W., & Ritchie, D. M. (1988). *The C programming language* (2nd ed.). Prentice Hall. — **C:** procedural implementation.
-- Ramalho, L. (2022). *Fluent Python* (2nd ed.). O'Reilly Media. — **Python:** object-oriented implementation.
+## What to expect
+
+For the chosen column the program prints the statistics of its values, sorted internally:
+
+```text
+User has choosen: fare
+Median: 17.930000
+Sum: 366136.940000
+Mean: 18.306847
+Mode: 7.580000
+Q1: 12.380000
+Q2: 17.930000
+Q3: 23.740000
+IQR: 11.360000
+Population variance: 56.380645
+Population std dev: 7.508705
+Sample variance: 56.383464
+Sample std dev: 7.508892
+Min: 2.580000
+Max: 42.060000
+Range: 39.480000
+```
+
+- Integer columns (e.g. `task_id`) are handled as integers, decimal columns (e.g. `fare`) as doubles.
+- Median of an even count is the average of the two middle values.
+- Mode prints the first most frequent value (the smallest when there is a tie); if every value is unique it reports that there is no mode.
+- Quartiles use linear interpolation between ranks; IQR is Q3 - Q1.
