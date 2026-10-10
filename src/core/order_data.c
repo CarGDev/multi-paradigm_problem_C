@@ -14,9 +14,14 @@
 
 #define CHAR_SIZE 4096
 
+/*
+ * Reads every row of the CSV in argv[1] and collects the values of the chosen
+ * column into an array of long or double, depending on the column type. Cells
+ * that are not valid numbers are skipped. The caller owns the result and must
+ * free values.i (the union shares storage with values.d) and the struct.
+ * Returns NULL if memory runs out.
+ */
 Values_Data *getting_all_data(Header *headers, int option, char **argv) {
-  printf("User has choosen: %s\n", headers[option].name);
-
   FILE *fp = fopen(argv[1], "r");
   if (!fp) {
     perror("fopen");
@@ -104,6 +109,10 @@ Values_Data *getting_all_data(Header *headers, int option, char **argv) {
   return values;
 }
 
+/*
+ * Sift-down step of heap sort for long: restores the max-heap property for the
+ * subtree rooted at index i, considering only the first n elements.
+ */
 void heaping_long(long *arr, int n, int i) {
   int largest = i;
   int l = 2 * i + 1;
@@ -124,6 +133,10 @@ void heaping_long(long *arr, int n, int i) {
   }
 }
 
+/*
+ * Sift-down step of heap sort for double: restores the max-heap property for
+ * the subtree rooted at index i, considering only the first n elements.
+ */
 void heaping_double(double *arr, int n, int i) {
   int largest = i;
   int l = 2 * i + 1;
@@ -144,6 +157,10 @@ void heaping_double(double *arr, int n, int i) {
   }
 }
 
+/*
+ * Sorts the values of the list in ascending order, in place, with heap sort.
+ * The sorted order is what median, mode and quartiles rely on.
+ */
 void sorting(Values_Data *list, ColumnType type) {
   int n = (int)list->count;
   if (type == TYPE_INT) {
@@ -173,6 +190,10 @@ void sorting(Values_Data *list, ColumnType type) {
   }
 }
 
+/*
+ * Loads the chosen column and returns it sorted in ascending order. Exits if
+ * the data cannot be loaded.
+ */
 Values_Data *order(Header *headers, int option, char **argv) {
   Values_Data *list = getting_all_data(headers, option, argv);
   if (list == NULL) {
@@ -183,6 +204,10 @@ Values_Data *order(Header *headers, int option, char **argv) {
   return list;
 }
 
+/*
+ * Prints all the statistics of the chosen column (median, sum, mean, mode,
+ * quartiles, variance, min, max and range) and frees the loaded data.
+ */
 void creatingResults(Header *headers, int option, char **argv) {
   Values_Data *list = order(headers, option, argv);
   if (list == NULL) {

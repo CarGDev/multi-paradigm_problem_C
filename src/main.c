@@ -8,6 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+ * Entry point: reads the CSV given as argument, asks which numeric column to
+ * analyze and prints its statistics. Returns 1 when there is no usable data.
+ */
 int main(int argc, char **argv) {
   Header *headers = csv_headers(argc, argv);
   if (!headers) {

@@ -9,6 +9,13 @@
 #include <string.h>
 #include <unistd.h>
 
+/*
+ * Reads the header row of the CSV in argv[1] and keeps only the columns whose
+ * value in the first data row is numeric, storing their name, position in the
+ * file and type (integer or decimal). The returned array ends with a header
+ * whose name is NULL; free it with free_headers(). Returns NULL when the file
+ * has no header or no data row. Exits on a bad argument or unreadable file.
+ */
 Header *csv_headers(int argc, char **argv) {
   if (argc != 2) {
     fprintf(stderr, "Only one argument is allowed");
@@ -95,6 +102,9 @@ Header *csv_headers(int argc, char **argv) {
   return headers;
 }
 
+/*
+ * Releases the array returned by csv_headers() and every column name in it.
+ */
 void free_headers(Header *headers) {
   if (headers == NULL) {
     return;

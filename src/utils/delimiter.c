@@ -3,6 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+ * Splits a CSV line on delim, ignoring delimiters inside double quotes and
+ * unescaping doubled quotes (""). Trailing newline characters are removed from
+ * the last field. Returns a NULL-terminated array of newly allocated strings
+ * (free each one and then the array), or NULL on NULL input, unbalanced quotes
+ * or lack of memory.
+ */
 char **str_split(const char *s, char delim) {
   if (s == NULL)
     return NULL;

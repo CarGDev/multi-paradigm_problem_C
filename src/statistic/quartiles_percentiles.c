@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
+/* Value at position i as a double, whatever the column type is. */
 static double at(Values_Data *list, ColumnType type, size_t i) {
   return type == TYPE_INT ? (double)list->values.i[i] : list->values.d[i];
 }

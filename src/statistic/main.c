@@ -4,6 +4,9 @@
 #include <stddef.h>
 #include <stdio.h>
 
+/*
+ * The sum of all values in the list. Prints it and also returns it.
+ */
 double summatory(Values_Data *list, ColumnType *type) {
   double sum = 0;
   if (*type == TYPE_INT) {
@@ -34,10 +37,12 @@ void mean(Values_Data *list, ColumnType *type) {
   }
 }
 
+/* Value at position i as a double, whatever the column type is. */
 static double at(Values_Data *list, ColumnType type, size_t i) {
   return type == TYPE_INT ? (double)list->values.i[i] : list->values.d[i];
 }
 
+/* Prints a value preceded by a space, as an integer or a decimal. */
 static void print_value(double v, ColumnType type) {
   if (type == TYPE_INT) {
     printf(" %ld", (long)v);
