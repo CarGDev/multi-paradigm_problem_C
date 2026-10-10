@@ -13,7 +13,7 @@ This compiles everything under `src/` into the `statistics` executable. `make cl
 ## Run
 
 ```sh
-./statistics results.csv
+./statistics test.csv
 ```
 
 The CSV must be comma-separated with a header row. The program lists the numeric columns of the file:
