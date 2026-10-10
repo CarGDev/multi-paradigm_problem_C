@@ -5,7 +5,7 @@
 
 double summatory(Values_Data *list, ColumnType *type) {
   double sum = 0;
-  if (type == TYPE_INT) {
+  if (*type == TYPE_INT) {
     for (size_t i = 0; i < list->count; i++) {
       sum += list->values.i[i];
     }
